@@ -2,6 +2,8 @@
 name = "forte_cubes"
 version = "0.1.0"
 edition = "2021"
+description = "Cube model and terrain extension for the Forte Engine."
+license = "MIT"
 exlude = ["assets/"]
 
 [dependencies]
