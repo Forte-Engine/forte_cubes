@@ -1,0 +1,166 @@
+{
+    "name": "warrior",
+    "texture": "warrior.png",
+    "root": {
+        "name": "chest",
+        "position": [0.0, 12.0, 0.0],
+        "parts": [
+            {
+                "name": "chest",
+                "position": [0.0, 0.0, 0.0],
+                "scale": [8.0, 12.0, 4.0],
+                "tex_offset": [104, 92]
+            }
+        ],
+        "bones": [
+            {
+                "name": "left leg",
+                "position": [-2.0, -6.0, 0.0],
+                "parts": [
+                    {
+                        "name": "left thigh",
+                        "position": [0.0, -3.0, 0.0],
+                        "scale": [4.0, 6.0, 4.0],
+                        "tex_offset": [80, 118]
+                    }
+                ],
+                "bones": [
+                    {
+                        "name": "left knee",
+                        "position": [-0.0, -6.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "left calf",
+                                "position": [0.0, -3.0, 0.0],
+                                "scale": [4.0, 6.0, 4.0],
+                                "tex_offset": [112, 108]
+                            }
+                        ],
+                        "bones": []
+                    }
+                ]
+            },
+            {
+                "name": "right leg",
+                "position": [2.0, -6.0, 0.0],
+                "parts": [
+                    {
+                        "name": "right thigh",
+                        "position": [0.0, -3.0, 0.0],
+                        "scale": [4.0, 6.0, 4.0],
+                        "tex_offset": [112, 118]
+                    }
+                ],
+                "bones": [
+                    {
+                        "name": "right knee",
+                        "position": [-0.0, -6.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "right calf",
+                                "position": [0.0, -3.0, 0.0],
+                                "scale": [4.0, 6.0, 4.0],
+                                "tex_offset": [96, 118]
+                            }
+                        ],
+                        "bones": []
+                    }
+                ]
+            },
+            {
+                "name": "left arm",
+                "position": [6.0, 6.0, 0.0],
+                "parts": [
+                    {
+                        "name": "left upper arm",
+                        "position": [0.0, -3.0, 0.0],
+                        "scale": [4.0, 6.0, 4.0],
+                        "tex_offset": [80, 108]
+                    }
+                ],
+                "bones": [
+                    {
+                        "name": "left elbow",
+                        "position": [0.0, -6.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "left lower arm",
+                                "position": [0.0, -3.0, 0.0],
+                                "scale": [4.0, 6.0, 4.0],
+                                "tex_offset": [64, 108]
+                            }
+                        ],
+                        "bones": []
+                    }
+                ]
+            },
+            {
+                "name": "right arm",
+                "position": [-6.0, 6.0, 0.0],
+                "parts": [
+                    {
+                        "name": "right upper arm",
+                        "position": [0.0, -3.0, 0.0],
+                        "scale": [4.0, 6.0, 4.0],
+                        "tex_offset": [64, 118]
+                    }
+                ],
+                "bones": [
+                    {
+                        "name": "right elbow",
+                        "position": [0.0, -6.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "right lower arm",
+                                "position": [0.0, -3.0, 0.0],
+                                "scale": [4.0, 6.0, 4.0],
+                                "tex_offset": [96, 108]
+                            }
+                        ],
+                        "bones": []
+                    }
+                ]
+            },
+            {
+                "name": "neck",
+                "position": [0.0, 6.0, 0.0],
+                "parts": [
+                    {
+                        "name": "head",
+                        "position": [0.0, 4.0, 0.0],
+                        "scale": [8.0, 8.0, 8.0],
+                        "tex_offset": [64, 92]
+                    }
+                ],
+                "bones": [
+                    {
+                        "name": "left ear",
+                        "position": [-4.0, 3.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "left ear",
+                                "rotation": [0.0, 50.0, 0.0],
+                                "scale": [2.0, 2.0, 1.0],
+                                "tex_offset": [88, 97]
+                            }
+                        ],
+                        "bones": []
+                    },
+                    {
+                        "name": "right ear",
+                        "position": [4.0, 3.0, 0.0],
+                        "parts": [
+                            {
+                                "name": "right ear",
+                                "rotation": [0.0, -50.0, 0.0],
+                                "scale": [2.0, 2.0, 1.0],
+                                "tex_offset": [88, 97]
+                            }
+                        ],
+                        "bones": []
+                    }
+                ]
+            }
+        ]
+    }
+}
