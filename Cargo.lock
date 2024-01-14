@@ -523,9 +523,9 @@ dependencies = [
 
 [[package]]
 name = "forte_engine"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1746bf03eab84ae50aea8e1b6414437c10f1668c95bad433f227aab080d99ae8"
+checksum = "ee90a3388818821bac0fd275f499b1e4637fb5b26c781b91d536c149297d9ff5"
 dependencies = [
  "anyhow",
  "bytemuck",

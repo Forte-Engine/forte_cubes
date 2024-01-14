@@ -7,7 +7,7 @@ license = "MIT"
 exlude = ["assets/"]
 
 [dependencies]
-forte_engine = "0.1.1"
+forte_engine = "0.1.2"
 wgpu = "0.18"
 cgmath = "0.18"
 serde = { version = "1.0.195", features = [ "derive" ] }
