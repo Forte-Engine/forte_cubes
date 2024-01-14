@@ -15,7 +15,7 @@ const CHUNK_SIZE: usize = 16;
 pub struct Chunk<T: BlockDefinitions<M>, M: MaterialDef + 'static> {
     pub id: u32,
     pub transform: Transform,
-    data: [[[u16; CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE],
+    data: [[[(u16, u16); CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE],
     buffer: Option<wgpu::Buffer>,
     handle: Option<Handle<Mesh>>,
     phantom_definitions: PhantomData<T>,
@@ -23,13 +23,13 @@ pub struct Chunk<T: BlockDefinitions<M>, M: MaterialDef + 'static> {
 }
 
 impl <T: BlockDefinitions<M>, M: MaterialDef + 'static> Chunk<T, M> {
-    pub fn empty(id: u32) -> Self { Self::new(id, [[[0; CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE]) }
-    pub fn set(&mut self, location: Vector3<usize>, value: M) { self.data[location.x][location.y][location.z] = value.into(); }
-    pub fn get(&self, location: Vector3<usize>) -> M { self.data[location.x][location.y][location.z].into() }
+    pub fn empty(id: u32) -> Self { Self::new(id, [[[(0, 0); CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE]) }
+    pub fn set(&mut self, location: Vector3<usize>, value: M, data: u16) { self.data[location.x][location.y][location.z] = (value.into(), data); }
+    pub fn get(&self, location: Vector3<usize>) -> M { self.data[location.x][location.y][location.z].0.into() }
     pub fn handle(&self) -> Option<&Handle<Mesh>> { self.handle.as_ref() }
     pub fn buffer(&self) -> Option<&wgpu::Buffer> { self.buffer.as_ref() }
 
-    pub fn new(id: u32, data: [[[u16; CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE]) -> Self { 
+    pub fn new(id: u32, data: [[[(u16, u16); CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE]) -> Self { 
         Self { 
             id, 
             transform: Transform::default(), 

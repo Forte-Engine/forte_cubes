@@ -48,15 +48,15 @@ impl EngineApp for MainApp {
 
         for x in 0 .. 15 {
             for z in 0 .. 15 {
-                chunk.set(Vector3 { x, y: 0, z }, Material::GRASS);
+                chunk.set(Vector3 { x, y: 0, z }, Material::GRASS, 0);
 
                 if x == 5 && z == 5 {
-                    chunk.set(Vector3 { x, y: 1, z }, Material::GRASS);
-                    chunk.set(Vector3 { x, y: 2, z }, Material::GRASS);
+                    chunk.set(Vector3 { x, y: 1, z }, Material::GRASS, 0);
+                    chunk.set(Vector3 { x, y: 2, z }, Material::GRASS, 0);
                 }
 
                 if (x == 5 && (z == 3 || z == 7)) || ((x == 3 || x == 7) && z == 5) {
-                    chunk.set(Vector3 { x, y: 1, z }, Material::GRASS);
+                    chunk.set(Vector3 { x, y: 1, z }, Material::GRASS, 0);
                 }
             }
         }
