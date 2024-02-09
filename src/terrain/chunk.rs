@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use cgmath::*;
-use forte_engine::{math::transforms::Transform, render::{primitives::{mesh::Mesh, transforms::TransformRaw, vertices::Vertex}, resources::Handle, render_engine::RenderEngine}};
+use forte_engine::{math::transforms::Transform, primitives::{mesh::Mesh, transforms::TransformRaw, vertices::Vertex}, render::render_engine::RenderEngine, utils::resources::Handle};
 use wgpu::util::DeviceExt;
 
 use crate::terrain::{blocks::*, ChunkEngine};

@@ -1,6 +1,7 @@
 use cgmath::*;
 use forte_cubes::models::{CubeEngine, animations::{AnimatedModel, AnimController}, file::SBFile, data::CubeModelBone, DrawCubes};
-use forte_engine::{lights::{LightEngine, lights::LightUniform}, render::{primitives::cameras::{Camera, CameraController}, render_engine::RenderEngine, input::EngineInput, render_utils}, math::{quaternion::QuaternionExt, vec::VecExt}, EngineApp, run_app};
+use forte_engine::{component_app::EngineComponent, inputs::winit_input::EngineInput, lights::{lights::LightUniform, LightEngine}, math::{quaternion::QuaternionExt, vec::VecExt}, primitives::cameras::Camera, render::{render_engine::RenderEngine, render_utils}, run_app, utils::camera_controller::CameraController, EngineApp};
+use winit::event::ElementState;
 
 #[derive(Debug)]
 pub struct MainApp { 
@@ -16,7 +17,8 @@ pub struct MainApp {
 impl EngineApp for MainApp {
     fn create(mut engine: RenderEngine) -> Self {
         // create light engine
-        let mut light_engine = LightEngine::new(&engine, [0.1, 0.1, 0.1]);
+        let mut light_engine = LightEngine::create(&mut engine);
+        light_engine.set_ambient_color([0.1, 0.1, 0.1]);
         light_engine.add_light(0, LightUniform::new([2.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0], f32::MAX, 1.0, 1000.0));
         light_engine.add_light(1, LightUniform::new([0.0, 2.0, 0.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0], f32::MAX, 1.0, 1000.0));
         light_engine.add_light(2, LightUniform::new([0.0, 0.0, 2.0], [0.0, 0.0, 1.0], [1.0, 0.0, 0.0], f32::MAX, 1.0, 1000.0));
@@ -46,14 +48,21 @@ impl EngineApp for MainApp {
         }
     }
 
-    fn input(&mut self, input: EngineInput) { self.controller.input(&input) }
+    fn start(&mut self) {}
+
+    fn input(&mut self, input: EngineInput) {
+        match input {
+            EngineInput::KeyInput(key, state) => self.controller.key_input(key, matches!(state, ElementState::Pressed)),
+            _ => {}
+        }
+    }
 
     fn update(&mut self) {
         // update
         self.controller.update_camera(&mut self.camera);
         self.camera.update(&mut self.render_engine);
         self.model.update(&self.render_engine);
-        self.light_engine.update(&self.render_engine);
+        self.light_engine.update(&mut self.render_engine);
 
         // start render
         let resources = render_utils::prepare_render(&self.render_engine);
@@ -95,9 +104,9 @@ impl EngineApp for MainApp {
         }
 
         render_utils::finalize_render(&mut self.render_engine, resources);
+        self.render_engine.next_frame();
     }
 
-    fn events_cleared(&mut self) { self.render_engine.next_frame(); }
     fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) { self.render_engine.resize(new_size); }
     fn exit(&mut self) {}
 }
@@ -135,5 +144,5 @@ impl AnimController for TestAnimController {
 }
 
 fn main() {
-    pollster::block_on(run_app::<MainApp>());
+    run_app::<MainApp>();
 }

@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use cgmath::{Vector2, Vector3, Quaternion};
-use forte_engine::{math::{transforms::Transform, vector::VectorExt}, render::{render_engine::RenderEngine, files::Files}};
+use forte_engine::{math::{transforms::Transform, vector::VectorExt}, render::render_engine::RenderEngine, utils::files::Files};
 use serde::*;
 
 use crate::models::{cubes::CubeModel, data::{CubeModelPart, CubeModelBone}};

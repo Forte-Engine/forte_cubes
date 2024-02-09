@@ -2,7 +2,7 @@ use std::{fmt::Debug, marker::PhantomData};
 
 use blocks::*;
 use chunk::Chunk;
-use forte_engine::{render::{pipelines::Pipeline, textures::textures::Texture, resources::Handle, render_engine::{RenderEngine, DrawMesh}, primitives::{transforms::TransformRaw, cameras::Camera, vertices::Vertex}}, lights::lights::LightUniform};
+use forte_engine::{lights::lights::LightUniform, primitives::{cameras::Camera, textures::Texture, transforms::TransformRaw, vertices::Vertex}, render::{pipelines::Pipeline, render_engine::RenderEngine}, utils::resources::Handle};
 
 pub mod blocks;
 pub mod chunk;
@@ -30,11 +30,12 @@ impl <T: BlockDefinitions<M>, M: MaterialDef + 'static> ChunkEngine<T, M> {
                     &engine.device.create_bind_group_layout(&Camera::BIND_LAYOUT),
                     &engine.device.create_bind_group_layout(&Texture::BIND_LAYOUT),
                     &engine.device.create_bind_group_layout(&LightUniform::BIND_LAYOUT)
-                ]
+                ],
+                true
             ),
             atlas: engine.load_texture(T::ATLAS),
             phantom_def: PhantomData::default(),
-            phantom_mat: PhantomData::default()
+            phantom_mat: PhantomData::default(),
         }
     }
 }
@@ -60,7 +61,8 @@ impl<'a, 'b> DrawChunks<'a, 'b> for wgpu::RenderPass<'a> where 'b: 'a {
         engine: &'b ChunkEngine<T, M>, 
         camera: &'b Camera
     ) {
-        self.prepare_draw(&engine.pipeline, camera);
+        engine.pipeline.bind(self);
+        camera.bind(self, 0);
     }
 
     fn draw_chunk<T: BlockDefinitions<M>, M: MaterialDef + 'static>(
@@ -72,6 +74,6 @@ impl<'a, 'b> DrawChunks<'a, 'b> for wgpu::RenderPass<'a> where 'b: 'a {
         chunk.render_buffer(engine);
         let handle = chunk.handle().expect("Chunk must have rendered mesh to be drawn!");
         let buffer = chunk.buffer().expect("Buffer did not render!");
-        self.draw_list_mesh(engine, handle, &chunk_engine.atlas, buffer, 1);
+        engine.draw_textured_list_mesh(self, handle, &chunk_engine.atlas, buffer, 1);
     }
 }

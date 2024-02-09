@@ -1,7 +1,7 @@
 use animations::{AnimatedModel, AnimController};
 use cubes::*;
 use data::*;
-use forte_engine::{lights::lights::LightUniform, render::{primitives::{vertices::Vertex, mesh::Mesh, cameras::Camera}, pipelines::Pipeline, resources::Handle, render_engine::{RenderEngine, DrawMesh}, textures::textures::Texture}};
+use forte_engine::{lights::lights::LightUniform, primitives::{cameras::Camera, mesh::Mesh, textures::Texture, vertices::Vertex}, render::{pipelines::Pipeline, render_engine::RenderEngine}, utils::resources::Handle};
 
 pub mod animations;
 pub mod cubes;
@@ -82,7 +82,8 @@ impl CubeEngine {
                 &engine.device.create_bind_group_layout(&Camera::BIND_LAYOUT),
                 &engine.device.create_bind_group_layout(&Texture::BIND_LAYOUT),
                 &engine.device.create_bind_group_layout(&LightUniform::BIND_LAYOUT)
-            ]
+            ],
+            true
         );
 
         let mesh = engine.create_mesh("cube_engine_mesh", VERTICES, INDICES);
@@ -143,8 +144,8 @@ impl<'a, 'b> DrawCubes<'a, 'b> for wgpu::RenderPass<'a> where 'b: 'a {
         texture: &'b Handle<Texture>,
         data: &'b CubeModelData
     ) {
-        self.draw_mesh(
-            engine, mesh, texture, 
+        engine.draw_textured_mesh(
+            self, mesh, texture, 
             &data.cube_buffer, 
             data.size
         );

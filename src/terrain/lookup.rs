@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use forte_engine::render::primitives::vertices::Vertex;
+use forte_engine::primitives::vertices::Vertex;
 
 pub const CUBE_TOP: [Vertex; 6] = [
     Vertex { position: [0.0, 1.0, 0.0], tex_coords: [0.0, 0.0], normal: [0.0, 1.0, 0.0] },

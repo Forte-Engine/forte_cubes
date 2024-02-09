@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use cgmath::*;
-use forte_engine::{render::primitives::vertices::Vertex, math::vec::VecExt};
+use forte_engine::{primitives::vertices::Vertex, math::vec::VecExt};
 
 use crate::terrain::lookup;
 
@@ -178,7 +178,7 @@ impl <M: MaterialDef + 'static> BlockRenderer<M> {
 
     fn append_face(target: &mut Vec<Vertex>, input: &[Vertex], tex_size: Vector2<u32>, idx: &u16) {
         // create input vertices
-        let mut input = input.clone().to_vec();
+        let mut input = input.to_vec();
 
         // reposition texture coords
         let width = 16.0 / tex_size.x as f32;

@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use cgmath::*;
-use forte_engine::{math::transforms::Transform, render::{resources::Handle, textures::textures::Texture, render_engine::RenderEngine}};
+use forte_engine::{math::transforms::Transform, primitives::textures::Texture, render::render_engine::RenderEngine, utils::resources::Handle};
 
 use crate::models::data::*;
 

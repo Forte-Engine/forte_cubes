@@ -1,6 +1,7 @@
 use cgmath::{Vector3, Zero, Quaternion, Rotation3};
 use forte_cubes::models::{CubeEngine, data::{CubeModelData, CubeInstance}, DrawCubes};
-use forte_engine::{render::{primitives::cameras::*, textures::textures::Texture, resources::Handle, render_engine::RenderEngine, input::EngineInput, render_utils}, math::transforms::Transform, lights::{LightEngine, lights::LightUniform, SetupLights}, EngineApp, run_app};
+use forte_engine::{component_app::EngineComponent, inputs::winit_input::EngineInput, lights::{lights::LightUniform, LightEngine}, math::transforms::Transform, primitives::{cameras::Camera, textures::Texture}, render::{render_engine::RenderEngine, render_utils}, run_app, utils::{camera_controller::CameraController, resources::Handle}, EngineApp};
+use winit::event::ElementState;
 
 #[derive(Debug)]
 pub struct MainApp { 
@@ -47,7 +48,8 @@ impl EngineApp for MainApp {
         ]);
 
         // setup light engine
-        let mut light_engine = LightEngine::new(&engine, [1.0, 1.0, 1.0]);
+        let mut light_engine = LightEngine::create(&mut engine);
+        light_engine.set_ambient_color([1.0, 1.0, 1.0]);
         light_engine.add_light(0, LightUniform::new(
             [
                 f32::cos(engine.time_since_start * 20.0) * 5.0 + 5.0, 
@@ -68,15 +70,20 @@ impl EngineApp for MainApp {
         }
     }
 
+    fn start(&mut self) {}
+
     fn input(&mut self, input: EngineInput) {
-        self.controller.input(&input);
+        match input {
+            EngineInput::KeyInput(key, state) => self.controller.key_input(key, matches!(state, ElementState::Pressed)),
+            _ => {}
+        }
     }
 
     fn update(&mut self) {
         // update
         self.controller.update_camera(&mut self.camera);
         self.camera.update(&mut self.render_engine);
-        self.light_engine.update(&self.render_engine);
+        self.light_engine.update(&mut self.render_engine);
 
         // start render
         let resources = render_utils::prepare_render(&self.render_engine);
@@ -132,19 +139,20 @@ impl EngineApp for MainApp {
             ]);
 
             pass.prepare_cube_engine(&self.model_engine, &self.camera);
-            pass.load_lights(&self.light_engine);
+            self.light_engine.render(&self.render_engine, &mut pass);
             pass.draw_cubes_raw(&self.render_engine, self.model_engine.mesh(), &self.texture, &self.data);
         }
 
         // end render
         render_utils::finalize_render(&mut self.render_engine, resources);
+
+        self.render_engine.next_frame();
     }
 
-    fn events_cleared(&mut self) { self.render_engine.next_frame(); }
     fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) { self.render_engine.resize(new_size); }
     fn exit(&mut self) {}
 }
 
 fn main() {
-    pollster::block_on(run_app::<MainApp>());
+    run_app::<MainApp>();
 }
