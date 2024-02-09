@@ -1,6 +1,6 @@
 use cgmath::Vector3;
-use forte_cubes::{terrain::{chunk::Chunk, ChunkEngine, DrawChunks, blocks::*}, define_blocks_materials};
-use forte_engine::{component_app::EngineComponent, inputs::winit_input::EngineInput, lights::{lights::LightUniform, LightEngine}, primitives::cameras::Camera, render::{render_engine::RenderEngine, render_utils}, run_app, utils::camera_controller::CameraController, EngineApp};
+use forte_cubes::{terrain::{chunk::Chunk, blocks::*}, define_blocks_materials};
+use forte_engine::{component_app::EngineComponent, inputs::winit_input::EngineInput, lights::{lights::LightUniform, LightEngine}, primitives::{cameras::Camera, textures::Texture, transforms::TransformRaw, vertices::Vertex}, render::{pipelines::Pipeline, render_engine::RenderEngine, render_utils}, run_app, utils::{camera_controller::CameraController, resources::Handle}, EngineApp};
 use winit::event::ElementState;
 
 define_blocks_materials!(
@@ -21,14 +21,18 @@ define_blocks_materials!(
 
 #[derive(Debug)]
 pub struct MainApp { 
+    pipeline: Pipeline,
     render_engine: RenderEngine,
     light_engine: LightEngine,
-    chunk_engine: ChunkEngine<Blocks, Material>,
 
     camera: Camera, 
     controller: CameraController,
-    chunk: Chunk<Blocks, Material>
+    chunk: Chunk<Blocks, Material>,
+    chunk_atlas: Handle<Texture>
 }
+
+#[include_wgsl_oil::include_wgsl_oil("../shaders/terrain.wgsl")]
+mod terrain_shader {}
 
 impl EngineApp for MainApp {
     fn create(mut engine: RenderEngine) -> Self {
@@ -43,9 +47,8 @@ impl EngineApp for MainApp {
         let camera_controller = CameraController::new(0.02);
 
         // create chunk
-        let chunk_engine = ChunkEngine::new(&mut engine);
         let mut chunk = Chunk::empty(0);
-        // chunk.set(Vector3 { x: 1, y: 1, z: 1 }, Material::GRASS);
+        let chunk_atlas = engine.load_texture(Blocks::ATLAS);
 
         for x in 0 .. 15 {
             for z in 0 .. 15 {
@@ -62,7 +65,7 @@ impl EngineApp for MainApp {
             }
         }
 
-        chunk.gen_mesh(&mut engine, &chunk_engine);
+        chunk.gen_mesh(&mut engine, &chunk_atlas);
 
         // setup light engine
         let mut light_engine = LightEngine::create(&mut engine);
@@ -80,12 +83,22 @@ impl EngineApp for MainApp {
 
         // create instance of self
         Self {
+            pipeline: Pipeline::new(
+                "chunk", &engine, terrain_shader::SOURCE,
+                &[Vertex::desc(), TransformRaw::desc()],
+                &[
+                    &engine.device.create_bind_group_layout(&Camera::BIND_LAYOUT),
+                    &engine.device.create_bind_group_layout(&Texture::BIND_LAYOUT),
+                    &engine.device.create_bind_group_layout(&LightUniform::BIND_LAYOUT)
+                ],
+                true
+            ),
             render_engine: engine,
             light_engine,
             camera,
             controller: camera_controller,
-            chunk_engine,
-            chunk
+            chunk,
+            chunk_atlas
         }
     }
 
@@ -138,10 +151,10 @@ impl EngineApp for MainApp {
             });
 
             // draw chunk
-            pass.prepare_chunk_draw(&self.chunk_engine, &self.camera);
-            // pass.load_lights(&mut self.light_engine);
+            self.pipeline.bind(&mut pass);
+            self.camera.bind(&mut pass, 0);
             self.light_engine.render(&self.render_engine, &mut pass);
-            pass.draw_chunk(&self.render_engine, &self.chunk_engine, &mut self.chunk);
+            self.chunk.draw(&self.render_engine, &mut pass, &self.chunk_atlas);
         }
 
         // end render

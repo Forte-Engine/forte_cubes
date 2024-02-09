@@ -1,10 +1,10 @@
 use std::marker::PhantomData;
 
 use cgmath::*;
-use forte_engine::{math::transforms::Transform, primitives::{mesh::Mesh, transforms::TransformRaw, vertices::Vertex}, render::render_engine::RenderEngine, utils::resources::Handle};
+use forte_engine::{math::transforms::Transform, primitives::{mesh::Mesh, textures::Texture, transforms::TransformRaw, vertices::Vertex}, render::render_engine::RenderEngine, utils::resources::Handle};
 use wgpu::util::DeviceExt;
 
-use crate::terrain::{blocks::*, ChunkEngine};
+use crate::terrain::blocks::*;
 
 const CHUNK_SIZE: usize = 16;
 
@@ -41,6 +41,13 @@ impl <T: BlockDefinitions<M>, M: MaterialDef + 'static> Chunk<T, M> {
         } 
     }
 
+    pub fn draw<'rpass>(&'rpass mut self, engine: &'rpass RenderEngine, pass: &mut wgpu::RenderPass<'rpass>, atlas: &'rpass Handle<Texture>) {
+        self.render_buffer(engine);
+        let handle = self.handle().expect("Chunk must have rendered mesh to be drawn!");
+        let buffer = self.buffer().expect("Buffer did not render!");
+        engine.draw_textured_list_mesh(pass, handle, &atlas, buffer, 1);
+    }
+
     pub(crate) fn render_buffer(&mut self, engine: &RenderEngine) {
         // make sure buffer exists
         if self.buffer.is_none() {
@@ -60,17 +67,17 @@ impl <T: BlockDefinitions<M>, M: MaterialDef + 'static> Chunk<T, M> {
         }
     }
 
-    pub fn ensure_handle_buffer(&mut self, engine: &mut RenderEngine, chunk_engine: &ChunkEngine<T, M>) -> &Handle<Mesh> {
+    pub fn ensure_handle_buffer(&mut self, engine: &mut RenderEngine, chunk_engine: &Handle<Texture>) -> &Handle<Mesh> {
         if self.handle.is_none() { self.gen_mesh(engine, chunk_engine); }
         self.handle.as_ref().expect("Could not ensure handle in chunk!")
     }
 
-    pub fn gen_mesh(&mut self, engine: &mut RenderEngine, chunk_engine: &ChunkEngine<T, M>) {
+    pub fn gen_mesh(&mut self, engine: &mut RenderEngine, atlas: &Handle<Texture>) {
         // create vertices and indices lists
         let mut vertices: Vec<Vertex> = vec![];
 
         // get atlas texture size
-        let texture = engine.texture(&chunk_engine.atlas);
+        let texture = engine.texture(&atlas);
         let tex_size = Vector2 { x: texture.texture.width(), y: texture.texture.height() };
 
         // generate chunk
